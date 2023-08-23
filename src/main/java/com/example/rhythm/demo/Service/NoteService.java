@@ -1,57 +1,66 @@
 package com.example.rhythm.demo.Service;
 
-import com.example.rhythm.demo.Dao.NoteDao;
+import com.example.rhythm.demo.repository.Repo;
 import com.example.rhythm.demo.Model.Note;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class NoteService {
     @Autowired
-    NoteDao noteDao;
-    public Note[] allNote=new Note[10];
-    private static ArrayList<Note> list=new ArrayList<Note>();
+    Repo noteDao;
 
-    public Note addNote(Note note){
-        list.add(note);
-//        noteDao.;
-        return note;
+    public ResponseEntity<Note> addNote(Note note){
+        try{
+            noteDao.save(note);
+            return new ResponseEntity<>(note, HttpStatus.CREATED);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity("Bad Request",HttpStatus.BAD_REQUEST);
+
     }
     public ResponseEntity<Note> deleteNote(int id){
-        int index=-1;
-        for(int i=0;i<list.size();i++) {
-            if (list.get(i).getId() == id) {
-                list.remove(i);
-            }
-            break;
+        try{
+            HashMap newResponse = new HashMap();
+            newResponse.put("message", "Note Deleted" );
+            noteDao.deleteById(id);
+            return new ResponseEntity(newResponse,HttpStatus.OK);
         }
-        return new ResponseEntity("Note Deleted",HttpStatus.OK);
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity("Bad Request",HttpStatus.NOT_FOUND);
+
     }
 
-    public static ResponseEntity<Note> updateNote(int id, Note note){
-        int index=-1;
-        for(int i=0;i<list.size();i++){
-            if(list.get(i).getId()==id){
-                index=i;
-                list.set(i,note);
-            }
+    public ResponseEntity<Note> updateNote(int id, Note note){
+        try{
+            note.setId(id);
+            noteDao.save(note);
+            return new ResponseEntity(noteDao.findById(id) ,HttpStatus.OK) ;
         }
-        if(index==-1) {
-            return new ResponseEntity("Empty note",HttpStatus.NOT_FOUND);
+        catch(Exception e){
+            e.printStackTrace();
         }
+        return new ResponseEntity("Bad Request",HttpStatus.NOT_FOUND);
 
-        return new ResponseEntity(list.get(index),HttpStatus.OK) ;
     }
 
+    public ResponseEntity<List<Note>> getAllNote() {
+        try{
+            return new ResponseEntity<>(noteDao.findAll(),HttpStatus.OK);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity("Bad Request",HttpStatus.BAD_REQUEST);
 
-    public ResponseEntity<ArrayList<Note>> getAllNote() {
-
-        System.out.println(noteDao.findAll());
-        return new ResponseEntity<>(list,HttpStatus.OK);
     }
 }

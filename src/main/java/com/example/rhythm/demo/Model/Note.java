@@ -1,14 +1,18 @@
 package com.example.rhythm.demo.Model;
 
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Note{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -25,14 +29,6 @@ public class Note{
                 ", noteDescription='" + noteDescription + '\'' +
                 ", noteTime='" + noteTime + '\'' +
                 '}';
-    }
-
-
-    public Note(int id, String noteTitle, String noteDescription, String noteTime) {
-        this.id = id;
-        this.noteTitle = noteTitle;
-        this.noteDescription = noteDescription;
-        this.noteTime = noteTime;
     }
 
 }
